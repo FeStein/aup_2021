@@ -40,5 +40,8 @@ int main() {
   std::cout << "Ergebnis Trapezregel: " << itrapez << std::endl;
   std::cout << "Ergebnis Simpsonregel: " << isimpson << std::endl;
 
+  delete [] x;
+  delete [] y;
+
   return 0;
 }
