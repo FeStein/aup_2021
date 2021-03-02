@@ -1,5 +1,12 @@
-### spefic stuff for this repo
-aup/fourier_trafo/*.dat
+Files with no extensions -> Important for cpp executables
+# Ignore all
+*
+
+# Unignore all with extensions
+!*.*
+
+# Unignore all dirs
+!*/
 
 ### C++ ###
 # Prerequisites
@@ -34,6 +41,7 @@ aup/fourier_trafo/*.dat
 *.exe
 *.out
 *.app
+
 
 ### Linux ###
 *~
