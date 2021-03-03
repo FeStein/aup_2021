@@ -14,4 +14,5 @@ fourier: fourier.o integration.o
 clean:
 	rm -f *.o core.*
 	rm -f fourier
+	rm -f output
 
