@@ -48,5 +48,7 @@ int main(int argc, char *argv[]) {
 
   std::cout << "Differenzenvefahren explizit erfolgreich durchgeführt" << std::endl;
 
+  delete [] T;
+
   return 0;
 }
