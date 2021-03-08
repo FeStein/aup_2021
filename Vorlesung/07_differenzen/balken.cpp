@@ -29,14 +29,15 @@ int main() {
   RHS[0] = 0;
   RHS[n - 1] = 0;
 
+  X[0] = 0;
+  X[n-1] = l;
+
   // Matrix befüllen
-  for (int i = 0; i < n; ++i) {
-    X[i] = i * dx;
-    for (int j = 1; j < n - 1; j++) {
-      MAT[j * n + j - 1] = 1.;
-      MAT[j * n + j] = -2.;
-      MAT[j * n + j + 1] = 1.;
-    }
+  for (int j = 1; j < n - 1; j++) {
+    X[j] = j * dx;
+    MAT[j * n + j - 1] = 1.;
+    MAT[j * n + j] = -2.;
+    MAT[j * n + j + 1] = 1.;
   }
 
   double zb, nb, fac;
