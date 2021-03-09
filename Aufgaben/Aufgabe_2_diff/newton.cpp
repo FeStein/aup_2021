@@ -7,7 +7,7 @@
 int main() {
   double a, b, epsilon;
   int n = 100;
-  int c = 0;
+  int c = 1;
 
   auto M = std::unique_ptr<double[]>(new double[n]);
 
@@ -19,12 +19,13 @@ int main() {
   M[1] = (a + 3*b) / 4; // Initial guess
 
   // Newton
-  double f, fs, x;
+  double f, fi, fs, x, xi;
   for (int i = 2; i < n; ++i) {
     x = M[i - 1];
+    xi = M[i - 2];
     f = sin(x * x / 2 * M_PI);
-    fs = cos(x * x / 2 * M_PI) * x * M_PI;
-    std::cout << fabs(f) << std::endl;
+    fi = sin(xi * xi / 2 * M_PI);
+    fs = (f - fi) / (x - xi);
     if (fabs(f) < epsilon) {
       break;
     }
