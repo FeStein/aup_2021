@@ -23,7 +23,7 @@ int main() {
     x = M[i - 1];
     f = sin(x * x / 2 * M_PI);
     fs = cos(x * x / 2 * M_PI) * x * M_PI;
-    if (abs(f) < epsilon) {
+    if (fabs(f) < epsilon) {
       break;
     }
     c++;
