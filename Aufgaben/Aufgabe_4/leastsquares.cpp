@@ -5,7 +5,7 @@
 
 using namespace std;
 
-std::vector<double> gauss_seidel(std::vector<std::vector<double>> M, std::vector<double> R);
+std::vector<double> gauss_seidel(std::vector<std::vector<double>> ARRM, std::vector<double> R);
 
 int main()
 {
@@ -26,34 +26,31 @@ int main()
   m = ARRX.size(); // number of data points
   n = 5; // polynom size + 1
 
-  // create M + RHS
-  std::vector<std::vector<double>> M(n, std::vector<double>(n, 1.0));
+  // create ARRM + RHS
+  std::vector<std::vector<double>> ARRM(n, std::vector<double>(n, 0.0));
   std::vector<double> RHS(n,0.0);
 
-  // fill M + RHS
-  for (int i = 0; i < n; ++i) {
-    M[0][0] += sqrt(ARRX[i]) * sqrt(ARRX[i]);
+  // fill ARRM + RHS
+  for (int i = 0; i < m; ++i) {
+    ARRM[0][0] += sqrt(ARRX[i]) * sqrt(ARRX[i]);
     RHS[0] += sqrt(ARRX[i]) * ARRY[i];
   }
   for (int row = 1; row < n; ++row) {
     for (int col = 1; col < n; ++col) {
       for (int i = 0; i < m; ++i) {
-        M[row][col] += pow(ARRX[i],col) * pow(ARRX[i],row);
+        ARRM[row][col] += pow(ARRX[i],col) * pow(ARRX[i],row);
       }
     }
     for (int i = 0; i < m; ++i) {
       // use symmetry
-      M[row][0] += pow(ARRX[i],row) * sqrt(ARRX[i]);
-      M[0][row] += pow(ARRX[i],row) * sqrt(ARRX[i]);
+      ARRM[row][0] += pow(ARRX[i],row) * sqrt(ARRX[i]);
+      ARRM[0][row] += pow(ARRX[i],row) * sqrt(ARRX[i]);
       RHS[row] += pow(ARRX[i],row) * ARRY[i];
     }
   }
-
   
   // Solve
-  std::cout << "=====solve output=====" << std::endl;
-
-  std::vector<double> ARRA = gauss_seidel(M,RHS);
+  std::vector<double> ARRA = gauss_seidel(ARRM,RHS);
   
   // output
   diskret = 101; // number of points for output
@@ -74,25 +71,30 @@ int main()
 }
 
 std::vector<double> gauss_seidel(std::vector<std::vector<double>> M, std::vector<double> R) {
-  int num_iter = 10000;
+  int num_iter = 10;
   int n = R.size();
-  std::vector<double> X(n,0.0);
+  std::vector<double> X(n,1.0);
+  std::vector<double> XBF(n,1.0);
 
-  double sum;
-
-  for (int iter = 0; iter < num_iter; ++iter) {
-    for (int row = 0; row < n; ++row) {
-      sum = 0.0;
-      for (int i = 0; i < row; ++i) {
-        if(i != row){
-          sum += M[row][i]*X[i];
+  double sigma;
+  for (int iter = 0; iter < num_iter; iter++) {
+    
+    for (int i = 0; i < n; i++) {
+      sigma = 0;
+      for (int j = 0; j < n; j++) {
+        if (i != j){
+          sigma += M[i][j]*XBF[j];
         }
       }
-      X[row] = (1.0/M[row][row]) * (R[row] - sum);
-    }    
+      X[i] = (1/M[i][i]) * (R[i] - sigma);
+    }
+    for (int i = 0; i < n; i++) {
+      XBF[i] = X[i];
+    }
   }
-  for (int i = 0; i < n; ++i) {
-    std::cout << X[i] << std::endl; 
+
+  for (int i = 0; i < n; i++) {
+    std::cout << X[i] << std::endl;
   }
   return X;
 }
