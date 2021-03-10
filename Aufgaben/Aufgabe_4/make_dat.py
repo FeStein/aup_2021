@@ -6,7 +6,8 @@ x = np.linspace(0,1,26)
 rn = np.random.rand(len(x))*0.03
 rn[0] = 0
 rn[1] = 0
-y =  4 * np.sqrt(x) - 3*x - 1 * x**2 + 2 * x**3 - 2 * x**4 + rn
+#y =  4 * np.sqrt(x) - 3*x - 1 * x**2 + 2 * x**3 - 2 * x**4 + rn
+y =  4 * np.sqrt(x) - 3*x - 1 * x**2 + 2 * x**3 - 2 * x**4 
 
 
 plt.plot(x,y,'o')
