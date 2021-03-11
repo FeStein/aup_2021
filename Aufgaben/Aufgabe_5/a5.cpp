@@ -15,7 +15,7 @@ double dF(vector<double> AX, vector<double> AY, double a, double b, double c);
 int main() {
   double x, y, b, dx, disk;
 
-  disk = 101; // number of x values for output
+  disk = 201; // number of x values for output
   int m;
 
   // read in the data
@@ -44,6 +44,23 @@ int main() {
   KOEFF = ac_eq(AX, AY, b2);
   F2 = dF(AX, AY, KOEFF[0], b2, KOEFF[1]);
 
+  dx = 10 / (disk - 1);
+  double y2;
+  ofstream ofile;
+  ofile.open("dF");
+  for (int i = 0; i < disk; ++i) {
+    x = -5 + dx * i;
+    KOEFF = ac_eq(AX, AY, x);
+    y = dF(AX, AY, KOEFF[0], x, KOEFF[1]);
+    y2 = 0;
+    for (int i = 0; i < m; ++i) {
+      y2 += pow(AY[i] - KOEFF[0] * pow(AX[i],b) - KOEFF[1],2) ;
+    }
+    ofile << x << " " << y << " " << y2 << endl;
+  }
+  ofile.close();
+
+
   int max_iter = 20;
 
   while (fabs(F2) > 0.001  && max_iter > 0) {
@@ -60,13 +77,17 @@ int main() {
   std::cout << "final b: " << b2 << std::endl;
   // output
   dx = (AX.back() - AX.front()) / (disk - 1);
-  ofstream ofile;
+
+  b2 = -0.5;
+  KOEFF = ac_eq(AX, AY, b2);
+  //ofstream ofile;
   ofile.open("output");
   for (int i = 0; i < disk; ++i) {
     x = AX.front() + dx * i;
     y = KOEFF[0] * pow(x, b2) + KOEFF[1];
     ofile << x << " " << y << endl;
   }
+  ofile.close();
 
   return 0;
 }
