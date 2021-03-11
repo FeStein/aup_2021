@@ -1,6 +1,6 @@
 .PHONY: clean, mrproper
 CC = g++
-CFLAGS = -g -Wall
+CFLAGS = -g -Wall -std=c++11
 
 all: leastsquares
 	./leastsquares
