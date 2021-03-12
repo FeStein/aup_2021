@@ -34,8 +34,8 @@ int main() {
   double b1, b2, F1, F2, bk;
 
   // intial guess of 2 b values
-  b1 = 0.5;
-  b2 = 0.3;
+  b1 = -1.25;
+  b2 = -1.0;
   vector<double> KOEFF;
 
   KOEFF = ac_eq(AX, AY, b1);
@@ -43,7 +43,8 @@ int main() {
 
   KOEFF = ac_eq(AX, AY, b2);
   F2 = dF(AX, AY, KOEFF[0], b2, KOEFF[1]);
-
+  
+  // This is some debug output
   dx = 10 / (disk - 1);
   double y2;
   ofstream ofile;
@@ -54,18 +55,18 @@ int main() {
     y = dF(AX, AY, KOEFF[0], x, KOEFF[1]);
     y2 = 0;
     for (int i = 0; i < m; ++i) {
-      y2 += pow(AY[i] - KOEFF[0] * pow(AX[i],b) - KOEFF[1],2) ;
+      y2 += pow(AY[i] - KOEFF[0] * pow(AX[i],x) - KOEFF[1],2) ;
     }
     ofile << x << " " << y << " " << y2 << endl;
   }
   ofile.close();
 
 
-  int max_iter = 20;
+  int max_iter = 200;
 
-  while (fabs(F2) > 0.001  && max_iter > 0) {
+  while (fabs(F2) > 0.00001  && max_iter > 0) {
     max_iter--;
-    bk = b2 - (F1 /(F1 - F2)) * (b2 - b1);
+    bk = b2 - (F2 /(F2 - F1)) * (b2 - b1);
     b1 = b2;
     b2 = bk;
     F1 = F2;
@@ -78,7 +79,6 @@ int main() {
   // output
   dx = (AX.back() - AX.front()) / (disk - 1);
 
-  b2 = -0.5;
   KOEFF = ac_eq(AX, AY, b2);
   //ofstream ofile;
   ofile.open("output");
