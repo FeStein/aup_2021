@@ -12,7 +12,8 @@ int main() {
   int n = 101;
   double dx, U;
   dx = 10. / (n - 1);
-
+  
+  // debug output
   std::ofstream ofile;
   ofile.open("output");
   for (int i = 0; i < n; ++i) {
@@ -21,6 +22,33 @@ int main() {
   }
   ofile.close();
 
+  int max_iter = 1000;
+  double hg, u1, u2, h1, h2, uk; 
+
+  hg = 3; //should be given
+
+  // guess 1 
+  u1 = 1.0;
+  h1 = H(u1) - hg;
+
+  // guess 2 
+  u2 = 2.0;
+  h2 = H(u2) - hg;
+
+  // newton raphson
+  while (fabs(h2) > 0.0001) {
+    max_iter--;
+    if (max_iter <= 0) break;
+    
+    uk = u2 - (h2 /(h2 - h1)) * (u1 - u2);
+   
+    u1 = u2; 
+    h1 = h2;
+    u2 = uk;
+    h2 = H(uk) - hg;
+  }
+
+  std::cout << "Perfekt U: " << u2 << std::endl;
   return 0;
 }
 
@@ -69,7 +97,7 @@ std::vector<double> grenzschicht(const std::vector<double> &Y, double U) {
   int n = Y.size();
   std::vector<double> KLEINU(n, 1.0); // example sinze real fun is not given
   for (int i = 0; i < n; ++i) {
-    KLEINU[i] = 3.0; 
+    KLEINU[i] = 4.0 * pow(U,2); 
   }
   return KLEINU;
 }
