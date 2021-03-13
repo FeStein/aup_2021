@@ -28,9 +28,6 @@ int main()
   std::vector<double> BK;
 
   std::vector<double> INT(n, 0);
-  for (int i = 0; i < n; ++i) {
-    std::cout << INT[i] << std::endl; 
-  }
 
   for (int k = 0; k < m; k++) {
     for (int i = 0; i < n; ++i) {

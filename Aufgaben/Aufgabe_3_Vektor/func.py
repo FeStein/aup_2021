@@ -30,10 +30,10 @@ Y = np.concatenate(([0],Y))
 X_final = np.concatenate((X,X+1,X+2,[3]))
 Y_final = np.concatenate((Y,Y,Y,[0]))
 
-plt.plot(X_final, Y_final)
-plt.ylim(-20,20)
-plt.xlim(0,3)
-plt.show()
+#plt.plot(X_final, Y_final)
+#plt.ylim(-20,20)
+#plt.xlim(0,3)
+#plt.show()
 
 with open("signal.dat", "w+") as file:
     for line in range(X_final.size):
