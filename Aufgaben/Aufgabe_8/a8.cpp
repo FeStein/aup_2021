@@ -1,7 +1,9 @@
 #include <fstream>
 #include <iostream>
 #include <math.h>
+#include <ratio>
 #include <vector>
+#include <string>
 
 int main() {
   double rho, lambda, cq, v, l, area, peri, alpha;
@@ -19,7 +21,7 @@ int main() {
   cb = (alpha * peri) / (rho * area * cq);
 
   int diskret_x = 101;
-  int diskret_t = 1000;
+  int diskret_t = 20000;
 
   dx = l / (diskret_x - 1);
   dt = 0.01;
@@ -29,20 +31,22 @@ int main() {
   // boundary conditions
   T.front() = 318.0;
   std::vector<double> TB = T;
-
-  for (int j = 0; j < diskret_t; j++) {
+  
+  std::ofstream ofile;
+  for (int j = 0; j <= diskret_t; j++) {
     for (int i = 1; i < diskret_x - 1; ++i) {
       T[i] = ca * dt * ((TB[i-1] + 2. * TB[i] + TB[i + 1]) / (2. * dx)) - cb * (TB[i] - 288.0) * dt - v * (TB[i] - TB[i-1]) * dt / dx + TB[i];
       TB = T;
     }
+    if (j % 2000 == 0) {
+      ofile.open(std::string("output_") + std::to_string(j));
+      for (int i = 0; i < diskret_x; ++i) {
+        ofile << i * dx << "," << T[i] << std::endl;
+      }
+      ofile.close();
+    }
   }
 
-  std::ofstream ofile;
-  ofile.open("output");
-  for (int i = 0; i < diskret_x; ++i) {
-    ofile << i * dx << "," << T[i] << std::endl;
-  }
-  ofile.close();
 
   return 0;
 }

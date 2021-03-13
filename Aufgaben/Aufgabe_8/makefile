@@ -14,4 +14,5 @@ a8: a8.o
 clean:
 	rm -f *.o core.*
 	rm -f a8
+	rm -f output*
 
