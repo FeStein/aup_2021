@@ -34,31 +34,31 @@ int main() {
     // step 1
     xi = X.back();
     yi = Y.back();
-    k1y = -g + cw(xi) * pow(yi, 2) * phi;
+    k1y = g - cw(xi) * pow(yi, 2) * phi;
     k1x = yi;
 
     // step 2
     xi = X.back() + k1x * (dt / 2.0);
     yi = Y.back() + k1y * (dt / 2.0);
-    k2y = -g + cw(xi) * pow(yi, 2) * phi;
+    k2y = g - cw(xi) * pow(yi, 2) * phi;
     k2x = yi;
 
     // step 3
     xi = X.back() + k2x * (dt / 2.0);
     yi = Y.back() + k2y * (dt / 2.0);
-    k3y = -g + cw(xi) * pow(yi, 2) * phi;
+    k3y = g - cw(xi) * pow(yi, 2) * phi;
     k3x = yi;
 
     // step 4
     xi = X.back() + k3x * (dt);
     yi = Y.back() + k3y * (dt);
-    k4y = -g + cw(xi) * pow(yi, 2) * phi;
+    k4y = g - cw(xi) * pow(yi, 2) * phi;
     k4x = yi;
 
     kx = (k1x + 2. * k2x + 2. * k3x + k4x) / 6.;
     ky = (k1y + 2. * k2y + 2. * k3y + k4y) / 6.;
 
-    X.push_back(X.back() + kx * dt);
+    X.push_back(X.back() - kx * dt);
     Y.push_back(Y.back() + ky * dt);
 
     // Ausgabe
