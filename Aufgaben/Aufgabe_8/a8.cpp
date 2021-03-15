@@ -35,7 +35,7 @@ int main() {
   std::ofstream ofile;
   for (int j = 0; j <= diskret_t; j++) {
     for (int i = 1; i < diskret_x - 1; ++i) {
-      T[i] = ca * dt * ((TB[i-1] + 2. * TB[i] + TB[i + 1]) / (2. * dx)) - cb * (TB[i] - 288.0) * dt - v * (TB[i] - TB[i-1]) * dt / dx + TB[i];
+      T[i] = ca * dt * ((TB[i-1] + 2. * TB[i] + TB[i + 1]) / (dx * dx)) - cb * (TB[i] - 288.0) * dt - v * (TB[i] - TB[i-1]) * dt / dx + TB[i];
       TB = T;
     }
     if (j % 2000 == 0) {
