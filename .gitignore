@@ -2,6 +2,9 @@ Files with no extensions -> Important for cpp executables
 # Ignore all
 *
 
+# Ignore my temporary notes
+tmp.pdf
+
 # Unignore all with extensions
 !*.*
 
