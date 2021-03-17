@@ -3,8 +3,8 @@
 #include <math.h>
 #include <vector>
 
-std::vector<double> thomas(std::vector<std::vector<double>> M,
-                           std::vector<double> R);
+std::vector<double> gauss(std::vector<std::vector<double>> M,
+                          std::vector<double> R);
 
 int main() {
 
@@ -33,43 +33,44 @@ int main() {
     hi_1 = X[i] - X[i - 1];
     M[i][i - 1] = hi_1;
     M[i][i] = 2 * (hi_1 + hi);
-    M[i][i+1] = hi; 
-    RHS[i] = (6 / hi) * (Y[i + 1] - Y[i]) - (6 / hi_1) * (Y[i] - Y[i-1]);
+    M[i][i + 1] = hi;
+    RHS[i] = (6 / hi) * (Y[i + 1] - Y[i]) - (6 / hi_1) * (Y[i] - Y[i - 1]);
   }
-  
-  std::vector<double> YS = thomas(M,RHS);
-  std::vector<std::vector<double>> KOEFF(n -1, std::vector<double>(4, 0.0));
-  
-  // Calculate koeff 
-  for (int i = 0; i < n - 1; ++i) {
-    hi = X[i + 1] - X[i];
-    KOEFF[i][0] = (YS[i +1] - YS[i]) / (6.0 * hi);
-    KOEFF[i][1] = YS[i]/2.0;
-    KOEFF[i][2] = (Y[i +1] - Y[i]) / hi - (YS[i +1] - YS[i]) / (6.0 * hi) - YS[i] * hi * 0.5;
-    KOEFF[i][3] = Y[i];
-  }
+
+  std::vector<double> YS = gauss(M, RHS);
+
+  // Calculate koeff
+  // for (int i = 0; i < n - 1; ++i) {
+  //  hi = X[i + 1] - X[i];
+  //  KOEFF[i][0] = (YS[i + 1] - YS[i]) / (6.0 * hi);
+  //  KOEFF[i][1] = YS[i] / 2.0;
+  //  KOEFF[i][2] = (Y[i + 1] - Y[i]) / hi - hi * (YS[i + 1] + 2 * YS[i]) / 6;
+  //  KOEFF[i][3] = Y[i];
+  //}
 
   std::ofstream ofile;
   ofile.open("output");
   double dx, xi;
-  int m = 1001, si, si_max;
-  dx = (X.back() - X.front()) / (m-1);
-  for (int i = 0; i < m; ++i) {
+  double a, b, c, d;
+  int m = 1001, si;
+  dx = (X.back() - X.front()) / (m - 1);
+  for (int i = 0; i < m-1; ++i) {
     x = X.front() + i * dx;
     si = 0;
-    while (x > X[si]) {
-      si ++ ;
+    // this implementation is very very bad
+    while (x >= X[si]) {
+      si++;
     }
-    si --;
-    std::cout << si << std::endl;
-    break;
+    si--;
     xi = X[si];
-    y = 1.0;
-    si_max = 0;
-    y = KOEFF[si][0] * pow(x - xi, 3)
-        + KOEFF[si][1] * pow(x - xi, 2)
-        + KOEFF[si][2] * pow(x - xi, 1)
-        + KOEFF[si][3];
+    hi = X[si + 1] - X[si];
+
+    // get koeff
+    a = (YS[si + 1] - YS[si]) / (6.0 * hi);
+    b = YS[si] / 2.0;
+    c = (Y[si + 1] - Y[si]) / hi - hi * (YS[si + 1] + 2 * YS[si]) / 6;
+    d = Y[si];
+    y = a * pow(x - xi, 3) + b * pow(x - xi, 2) + c * pow(x - xi, 1) + d;
     ofile << x << "," << y << std::endl;
   }
   ofile.close();
@@ -77,28 +78,38 @@ int main() {
   return 0;
 }
 
-// Thomas Algorithmus -> Einfache Vorwärtssubstituion
-std::vector<double> thomas(std::vector<std::vector<double>> M,
-                           std::vector<double> R) {
-  double z, nn;
-  int n = M.size();
+std::vector<double> gauss(std::vector<std::vector<double>> M,
+                          std::vector<double> R) {
 
-  // Rekursive Komponentenmodifikation (Vorwärtsdurchlauf)
-  M[0][1] = M[0][1] / M[0][0];
-  for (int i = 1; i < n - 1; ++i) {
-    M[i][i + 1] = M[i][i + 1] / (M[i][i] - M[i - 1][i + 1] * M[i][i - 1]);
-  }
-  R[0] = R[0] / M[0][0];
-  for (int i = 1; i < n; ++i) {
-    z = R[i] - R[i - 1] * M[i][i - 1];
-    nn = M[i][i] - M[i - 1][i + 1] * M[i][i - 1];
-    R[i] = z / nn;
+  int n = R.size();
+  std::vector<double> X(n, 0.0);
+  int i, j, k;
+
+  // forward substitution
+  for (i = 0; i < n - 1; i++) {
+    for (k = i + 1; k < n; k++) {
+      for (j = i; j < n; j++) {
+        X[j] = -M[i][j] * M[k][i] / M[i][i];
+      }
+
+      R[k] = R[k] - R[i] * M[k][i] / M[i][i];
+
+      for (j = i; j <= n - 1; j++) {
+        M[k][j] = M[k][j] + X[j];
+      }
+    }
   }
 
-  // Rückwärts Substituion
-  std::vector<double> S(n, 0);
-  for (int i = n - 2; i >= 0; --i) {
-    S[i] = R[i] - M[i][i + 1] * S[i + 1];
+  // backwards substitution
+  X[n - 1] = R[n - 1] / M[(n - 1)][n - 1];
+
+  for (i = n - 2; i >= 0; i--) {
+    X[i] = R[i];
+    for (j = i + 1; j < n; j++) {
+      X[i] = X[i] - M[i][j] * X[j];
+    }
+
+    X[i] = X[i] / M[i][i];
   }
-  return S;
+  return X;
 }
