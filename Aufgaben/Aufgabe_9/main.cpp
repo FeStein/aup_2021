@@ -5,66 +5,72 @@
 
 using namespace std;
 
-vector<double> thomas(vector<double> A, vector<double> B, vector<double> C,
-                      vector<double> D);
+std::vector<double> gauss(std::vector<std::vector<double>> M,
+                          std::vector<double> R);
+
 
 int main() {
   int n = 101;
   double dy;
-  dy = 1 / (n - 1);
+  dy = 1.0 / (n - 1);
 
-  //vector<double> RHS(n, 0.0);
-  //vector<double> A(n - 1, 0.0);
-  //vector<double> B(n, 0.0);
-  //vector<double> C(n - 1, 0.0);
+  vector<vector<double>> M(n, vector<double>(n, 0.0));
+  vector<double> RHS(n, 0.0);
 
-  //// RB
-  //B.front() = 1.0;
-  //B.back() = 1.0;
+  // RB
+  M.front().front() = 1.0;
+  M.back().back() = 1.0;
 
-  //for (int i = 1; i < n - 1; ++i) {
-  //  A[i - 1] = 1.0;
-  //  B[i] = -2.0;
-  //  C[i] = 1.0;
-  //  RHS[i] = pow(dy, 2);
-  //}
-
-  vector<double> A = {1.0,2.0};
-  vector<double> B = {1.0,2.0};
-  vector<double> C = {1.0,2.0,3.0};
-  vector<double> D = {10.0, 10.0, 10.0};
-
-  vector<double> U = thomas(A, B, C, D);
+  for (int i = 1; i < n - 1; ++i) {
+    M[i][i - 1] = 1.0;
+    M[i][i] = -2.0;
+    M[i][i + 1] = 1.0;
+    RHS[i] = pow(dy, 2);
+  }
+  vector<double> U = gauss(M, RHS);
 
   ofstream ofile;
   ofile.open("output");
   for (int i = 0; i < n; ++i) {
-    ofile << U[i] << endl;
+    ofile << i*dy << " " << U[i] << endl;
   }
   ofile.close();
 
   return 0;
 }
 
-vector<double> thomas(vector<double> A, vector<double> B, vector<double> C,
-                      vector<double> D) {
-  int n = B.size();
-  // forward subs
-  C[0] = C[1] / B[1];
-  for (int i = 1; i < n - 1; ++i) {
-    C[i] = C[i] / (B[i] - C[i - 1] * A[i]);
-  }
-  D[0] = D[1] / B[1];
-  for (int i = 1; i < n; ++i) {
-    D[i] = (D[i] - D[i - 1] * A[i]) / (B[i] - C[i - 1] * A[i]);
+std::vector<double> gauss(std::vector<std::vector<double>> M,
+                          std::vector<double> R) {
+
+  int n = R.size();
+  std::vector<double> X(n, 0.0);
+  int i, j, k;
+
+  //forward substitution
+  for (i = 0; i < n - 1; i++) {
+    for (k = i + 1; k < n; k++) {
+      for (j = i; j < n; j++) {
+        X[j] = -M[i][j] * M[k][i] / M[i][i];
+      }
+
+      R[k] = R[k] - R[i] * M[k][i] / M[i][i];
+
+      for (j = i; j <= n - 1; j++) {
+        M[k][j] = M[k][j] + X[j];
+      }
+    }
   }
 
-  // backwards subs
-  vector<double> X(n, 0.0);
-  X.back() = D.back();
-  for (int i = n - 1; i >= 0; --i) {
-    X[i] = D[i] - C[i] * X[i + 1];
-  }
+  // backwards substitution
+  X[n - 1] = R[n - 1] / M[(n - 1)][n - 1];
 
+  for (i = n - 2; i >= 0; i--) {
+    X[i] = R[i];
+    for (j = i + 1; j < n; j++) {
+      X[i] = X[i] - M[i][j] * X[j];
+    }
+
+    X[i] = X[i] / M[i][i];
+  }
   return X;
 }
